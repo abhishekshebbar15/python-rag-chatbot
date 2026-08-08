@@ -65,6 +65,8 @@ projectRAG/
 └── frontend/
     └── React application
 
+
+
 ⚙️ How It Works
 1.Python documentation is provided as the knowledge source.
 2.ingest.py processes the documents and divides them into text chunks.
@@ -92,13 +94,18 @@ ollama pull llama3.2
 4. Start Ollama
 ollama serve
 
-5. Start the FastAPI backend
+5. Generate the Vector Index
+Before starting the backend, generate the FAISS vector index:
+```bash
+python ingest.py
+
+6. Start the FastAPI backend
 python -m uvicorn app:app --reload
 
 The backend will run at:
 http://127.0.0.1:8000
 
-6. Start the frontend
+7. Start the frontend
 
 Open another terminal:
 

@@ -8,7 +8,7 @@ function App() {
 
   const messagesEndRef = useRef(null);
 
-  // Automatically scroll to the latest message
+  // Automatically scroll to latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -21,33 +21,34 @@ function App() {
     const userMessage = text.trim();
     const lowerMessage = userMessage.toLowerCase();
 
-const greetings = {
-  hello: "Hello! 👋",
-  hi: "Hi! 👋",
-  hey: "Hey! 👋",
-  "good morning": "Good morning! ☀️",
-  "good afternoon": "Good afternoon! 🌤️",
-  "good evening": "Good evening! 🌆",
-  bye: "Bye! 👋",
-  goodbye: "Goodbye! 👋",
-};
+    const greetings = {
+      hello: "Hello! 👋",
+      hi: "Hi! 👋",
+      hey: "Hey! 👋",
+      "good morning": "Good morning! ☀️",
+      "good afternoon": "Good afternoon! 🌤️",
+      "good evening": "Good evening! 🌆",
+      bye: "Bye! 👋",
+      goodbye: "Goodbye! 👋",
+    };
 
-if (greetings[lowerMessage]) {
-  setMessages((prev) => [
-    ...prev,
-    {
-      role: "user",
-      content: userMessage,
-    },
-    {
-      role: "assistant",
-      content: greetings[lowerMessage],
-    },
-  ]);
+    // Handle greetings locally
+    if (greetings[lowerMessage]) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "user",
+          content: userMessage,
+        },
+        {
+          role: "assistant",
+          content: greetings[lowerMessage],
+        },
+      ]);
 
-  setMessage("");
-  return;
-}
+      setMessage("");
+      return;
+    }
 
     // Show user's message immediately
     setMessages((prev) => [
@@ -62,18 +63,22 @@ if (greetings[lowerMessage]) {
     setLoading(true);
 
     try {
-      const response = await fetch("http://python-rag-chatbot.vercel.app/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userMessage,
-        }),
-      });
+      // CONNECT TO DEPLOYED FASTAPI BACKEND
+      const response = await fetch(
+        "https://python-rag-chatbot.vercel.app/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: userMessage,
+          }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Backend request failed");
+        throw new Error(`Backend request failed: ${response.status}`);
       }
 
       const data = await response.json();
@@ -86,14 +91,14 @@ if (greetings[lowerMessage]) {
         },
       ]);
     } catch (error) {
-      console.error(error);
+      console.error("Backend error:", error);
 
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
           content:
-            "⚠️ Unable to connect to the RAG backend. Make sure FastAPI and Ollama are running.",
+            "⚠️ Unable to connect to the RAG backend. Please try again.",
         },
       ]);
     } finally {
@@ -182,6 +187,7 @@ if (greetings[lowerMessage]) {
           </div>
 
           <div className="topbar-info">
+
             <div className="online-indicator">
               <span></span>
               RAG Online
@@ -194,6 +200,7 @@ if (greetings[lowerMessage]) {
             >
               🗑️
             </button>
+
           </div>
 
         </header>
@@ -229,6 +236,7 @@ if (greetings[lowerMessage]) {
                     className="suggestion"
                     onClick={() => sendMessage(question)}
                   >
+
                     <span>
                       {index === 0
                         ? "🧬"
@@ -240,6 +248,7 @@ if (greetings[lowerMessage]) {
                     {question}
 
                     <b>→</b>
+
                   </button>
 
                 ))}

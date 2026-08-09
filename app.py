@@ -4,14 +4,19 @@ from pydantic import BaseModel
 
 from rag import ask_rag
 
+
 app = FastAPI()
 
-# Allow React frontend to communicate with FastAPI
+
+# ============================================================
+# CORS
+# ============================================================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://your-frontend-domain.vercel.app"
+        "https://python-rag-chatbot-zei1.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -19,9 +24,17 @@ app.add_middleware(
 )
 
 
+# ============================================================
+# Request model
+# ============================================================
+
 class ChatRequest(BaseModel):
     message: str
 
+
+# ============================================================
+# Home
+# ============================================================
 
 @app.get("/")
 def home():
@@ -30,6 +43,10 @@ def home():
     }
 
 
+# ============================================================
+# Health
+# ============================================================
+
 @app.get("/health")
 def health():
     return {
@@ -37,10 +54,15 @@ def health():
     }
 
 
+# ============================================================
+# Chat
+# ============================================================
+
 @app.post("/chat")
 def chat(request: ChatRequest):
 
     try:
+
         answer = ask_rag(request.message)
 
         return {
